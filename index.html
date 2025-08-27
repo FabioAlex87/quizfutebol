@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz Futebol - Quem Quer Ser Milionário</title>
+    <style>
+        body {
+            background: #222831 url('https://images.pexels.com/photos/46798/the-ball-stadion-football-the-pitch-46798.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1?auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+            background-size: cover;
+            color: #EEEEEE;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        #quiz-container {
+            background: rgba(34, 40, 49, 0.92);
+            border-radius: 16px;
+            box-shadow: 0 4px 24px #22283188;
+            margin: 40px 0 0 60px;
+            padding: 32px 36px 24px 36px;
+            min-width: 350px;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #00ADB5;
+            margin-top: 0;
+            text-shadow: 2px 2px 8px #222831;
+        }
+        #pergunta {
+            font-size: 1.3em;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .opcoes {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            width: 100%;
+        }
+        .opcao {
+            background: #393E46cc;
+            border: 2px solid #EEEEEE;
+            border-radius: 8px;
+            color: #F8B400;
+            font-size: 1.1em;
+            padding: 14px 10px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, border 0.2s;
+            text-align: center;
+            box-shadow: 0 2px 8px #22283144;
+        }
+        .opcao:hover {
+            background: #00ADB522;
+            color: #EEEEEE;
+            border: 2px solid #00ADB5;
+        }
+        .opcao.correta {
+            background: #00ADB5;
+            color: #fff;
+            border: 2px solid #00ADB5;
+        }
+        .opcao.errada {
+            background: #B50000;
+            color: #fff;
+            border: 2px solid #B50000;
+        }
+        #score, #proxima {
+            margin-top: 24px;
+            font-size: 1.1em;
+        }
+        #proxima {
+            background: #F8B400;
+            color: #222831;
+            border: none;
+            padding: 10px 30px;
+            font-size: 1em;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 18px;
+            box-shadow: 0 2px 8px #22283144;
+            transition: background 0.2s, color 0.2s;
+            display: none;
+        }
+        #proxima:hover {
+            background: #00ADB5;
+            color: #EEEEEE;
+        }
+        #final {
+            font-size: 1.2em;
+            margin-top: 30px;
+            color: #F8B400;
+        }
+        #piramide {
+            margin: 40px 0 0 40px;
+            background: rgba(34, 40, 49, 0.92);
+            border-radius: 16px;
+            box-shadow: 0 4px 24px #22283188;
+            padding: 24px 24px 24px 24px;
+            min-width: 220px;
+            max-width: 260px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        .premio {
+            font-size: 1.1em;
+            color: #EEEEEE;
+            padding: 5px 0;
+            margin: 0;
+            width: 100%;
+            text-align: right;
+            transition: background 0.2s, color 0.2s;
+            border-radius: 8px;
+        }
+        .premio.ativo {
+            background: #F8B400;
+            color: #222831;
+            font-weight: bold;
+        }
+        .premio.marca {
+            color: #00ADB5;
+        }
+    </style>
+</head>
+<body>
+    <div id="quiz-container">
+        <h1>Quiz Futebol</h1>
+        <div id="score">Pergunta: 1 / 20</div>
+        <div id="pergunta"></div>
+        <div class="opcoes"></div>
+        <button id="proxima">Próxima Pergunta</button>
+        <div id="final" style="display:none;"></div>
+    </div>
+    <div id="piramide"></div>
+    <script>
+        // Prémios ao estilo "Quem Quer Ser Milionário"
+        const premios = [
+            "1. 100 €", "2. 200 €", "3. 300 €", "4. 500 €", "5. 1.000 €",
+            "6. 2.000 €", "7. 4.000 €", "8. 8.000 €", "9. 16.000 €", "10. 32.000 €",
+            "11. 64.000 €", "12. 125.000 €", "13. 250.000 €", "14. 500.000 €", "15. 1.000.000 €",
+            "16. 2.000.000 €", "17. 4.000.000 €", "18. 8.000.000 €", "19. 16.000.000 €", "20. 32.000.000 €"
+        ].reverse();
+
+        // Perguntas (30, dificuldade crescente e aleatoriedade)
+        const todasPerguntas = [
+            // Fáceis
+            { pergunta: "Qual país venceu a Copa do Mundo de 2018?", opcoes: ["Brasil", "França", "Alemanha", "Argentina"], correta: 1 },
+            { pergunta: "Qual jogador é conhecido como 'O Fenômeno'?", opcoes: ["Cristiano Ronaldo", "Pelé", "Ronaldo", "Ronaldinho"], correta: 2 },
+            { pergunta: "Qual país sediou a Copa do Mundo de 2014?", opcoes: ["Brasil", "Rússia", "África do Sul", "Alemanha"], correta: 0 },
+            { pergunta: "Quem ganhou a Bola de Ouro em 2021?", opcoes: ["Messi", "Lewandowski", "Mbappé", "Neymar"], correta: 0 },
+            { pergunta: "Qual clube tem mais títulos da Champions League?", opcoes: ["Barcelona", "Liverpool", "Real Madrid", "Milan"], correta: 2 },
+            { pergunta: "Quem marcou o gol da final da Copa do Mundo de 2014?", opcoes: ["Götze", "Messi", "Klose", "Schürrle"], correta: 0 },
+            { pergunta: "Qual seleção tem mais títulos mundiais?", opcoes: ["Alemanha", "Itália", "Brasil", "Argentina"], correta: 2 },
+            { pergunta: "Quem é o maior artilheiro da história da Seleção Brasileira?", opcoes: ["Romário", "Pelé", "Neymar", "Ronaldo"], correta: 1 },
+            { pergunta: "Qual país foi vice-campeão na Copa de 1950?", opcoes: ["Brasil", "Uruguai", "Suécia", "Itália"], correta: 0 },
+            { pergunta: "Quem é conhecido como 'Rei do Futebol'?", opcoes: ["Pelé", "Maradona", "Messi", "Cristiano Ronaldo"], correta: 0 },
+            // Médias
+            { pergunta: "Qual jogador detém o recorde de mais gols em Copas do Mundo?", opcoes: ["Pelé", "Klose", "Ronaldo", "Müller"], correta: 1 },
+            { pergunta: "Qual clube venceu a Libertadores em 2019?", opcoes: ["Boca Juniors", "River Plate", "Flamengo", "Grêmio"], correta: 2 },
+            { pergunta: "Quem foi o técnico do Brasil na Copa de 2002?", opcoes: ["Felipão", "Parreira", "Zagallo", "Dunga"], correta: 0 },
+            { pergunta: "Qual país ganhou a Eurocopa em 2016?", opcoes: ["França", "Alemanha", "Portugal", "Espanha"], correta: 2 },
+            { pergunta: "Quem marcou o gol do título do Mundial de Clubes 2006 para o Internacional?", opcoes: ["Fernandão", "Iarley", "Adriano Gabiru", "Alex"], correta: 2 },
+            { pergunta: "Qual goleiro defendeu mais pênaltis em Copas do Mundo?", opcoes: ["Buffon", "Taffarel", "Schmeichel", "Subasic"], correta: 3 },
+            { pergunta: "Qual seleção nunca participou de uma Copa do Mundo?", opcoes: ["Venezuela", "Equador", "Nigéria", "Austrália"], correta: 0 },
+            { pergunta: "Quem foi o artilheiro da Copa do Mundo de 1994?", opcoes: ["Romário", "Stoichkov", "Baggio", "Bebeto"], correta: 1 },
+            { pergunta: "Qual clube foi campeão inglês em 2016?", opcoes: ["Chelsea", "Manchester City", "Leicester", "Liverpool"], correta: 2 },
+            { pergunta: "Qual jogador português marcou 4 gols em uma final de Champions League?", opcoes: ["Cristiano Ronaldo", "Eusébio", "Deco", "Pauleta"], correta: 1 },
+            // Difíceis
+            { pergunta: "Qual país sediou a primeira Copa do Mundo?", opcoes: ["Brasil", "Uruguai", "Itália", "França"], correta: 1 },
+            { pergunta: "Quem foi o capitão da seleção brasileira em 1994?", opcoes: ["Dunga", "Romário", "Taffarel", "Cafu"], correta: 0 },
+            { pergunta: "Qual clube brasileiro tem mais títulos da Libertadores?", opcoes: ["São Paulo", "Palmeiras", "Santos", "Grêmio"], correta: 1 },
+            { pergunta: "Quem marcou o gol do título da Champions League 1999?", opcoes: ["Solskjaer", "Sheringham", "Giggs", "Beckham"], correta: 0 },
+            { pergunta: "Qual seleção venceu a Copa América de 2019?", opcoes: ["Argentina", "Chile", "Brasil", "Uruguai"], correta: 2 },
+            { pergunta: "Quem foi o goleiro titular do Brasil na Copa de 2018?", opcoes: ["Alisson", "Ederson", "Júlio César", "Taffarel"], correta: 0 },
+            { pergunta: "Qual jogador ganhou mais vezes a Bola de Ouro?", opcoes: ["Cristiano Ronaldo", "Messi", "Pelé", "Cruyff"], correta: 1 },
+            { pergunta: "Qual seleção foi campeã da Copa do Mundo de 1966?", opcoes: ["Alemanha", "Inglaterra", "Brasil", "Itália"], correta: 1 },
+            { pergunta: "Quem foi o técnico do Real Madrid na Champions 2018?", opcoes: ["Zidane", "Ancelotti", "Mourinho", "Del Bosque"], correta: 0 },
+            { pergunta: "Qual jogador fez o gol mais rápido em Copas do Mundo?", opcoes: ["Hakan Şükür", "Pelé", "Ronaldo", "Müller"], correta: 0 }
+        ];
+
+        // Função para embaralhar array
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // Pirâmide de prémios
+        const piramideDiv = document.getElementById('piramide');
+        function desenharPiramide(atual) {
+            piramideDiv.innerHTML = "";
+            for (let i = 0; i < premios.length; i++) {
+                const div = document.createElement('div');
+                div.className = "premio";
+                if (premios.length - i - 1 === atual) div.classList.add("ativo");
+                if ([4, 9, 14, 19].includes(i)) div.classList.add("marca");
+                div.textContent = premios[i];
+                piramideDiv.appendChild(div);
+            }
+        }
+
+        let perguntas = [];
+        let indice = 0;
+        let score = 0;
+        const perguntaDiv = document.getElementById('pergunta');
+        const opcoesDiv = document.querySelector('.opcoes');
+        const scoreDiv = document.getElementById('score');
+        const proximaBtn = document.getElementById('proxima');
+        const finalDiv = document.getElementById('final');
+
+        function novoJogo() {
+            perguntas = todasPerguntas.slice();
+            shuffle(perguntas);
+            perguntas = perguntas.slice(0, 20); // 20 perguntas aleatórias
+            indice = 0;
+            score = 0;
+            mostrarPergunta();
+        }
+
+        function mostrarPergunta() {
+            proximaBtn.style.display = "none";
+            finalDiv.style.display = "none";
+            perguntaDiv.textContent = perguntas[indice].pergunta;
+            opcoesDiv.innerHTML = "";
+            perguntas[indice].opcoes.forEach((op, i) => {
+                const btn = document.createElement('div');
+                btn.className = "opcao";
+                btn.textContent = op;
+                btn.onclick = () => responder(i, btn);
+                opcoesDiv.appendChild(btn);
+            });
+            scoreDiv.textContent = `Pergunta: ${indice + 1} / ${perguntas.length}`;
+            desenharPiramide(indice);
+        }
+
+        function responder(i, btn) {
+            const correta = perguntas[indice].correta;
+            const opcoes = opcoesDiv.querySelectorAll('.opcao');
+            opcoes.forEach((op, idx) => {
+                op.onclick = null;
+                if (idx === correta) op.classList.add('correta');
+                if (idx === i && idx !== correta) op.classList.add('errada');
+            });
+            if (i === correta) {
+                score++;
+                proximaBtn.style.display = "block";
+                scoreDiv.textContent = `Pergunta: ${indice + 1} / ${perguntas.length}`;
+            } else {
+                finalDiv.style.display = "block";
+                desenharPiramide(-1);
+                finalDiv.textContent = `Errou! Acertou ${score} de ${perguntas.length} perguntas. Prémio: ${score > 0 ? premios[perguntas.length - score] : "0 €"}<br>O jogo vai recomeçar...`;
+                setTimeout(novoJogo, 5000);
+            }
+        }
+
+        proximaBtn.onclick = () => {
+            indice++;
+            if (indice < perguntas.length) {
+                mostrarPergunta();
+            } else {
+                perguntaDiv.textContent = "";
+                opcoesDiv.innerHTML = "";
+                proximaBtn.style.display = "none";
+                finalDiv.style.display = "block";
+                desenharPiramide(-1);
+                finalDiv.textContent = `Parabéns! Acertou todas as perguntas! Prémio máximo: ${premios[0]}.<br>O jogo vai recomeçar...`;
+                setTimeout(novoJogo, 7000);
+            }
+        };
+
+        novoJogo();
+    </script>
+</body>
+</html>
