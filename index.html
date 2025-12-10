@@ -1,153 +1,349 @@
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz Futebol - Quem Quer Ser Milionário</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
+        :root {
+            --primary-color: #00ADB5;
+            --secondary-color: #393E46;
+            --background-dark: #222831;
+            --text-light: #EEEEEE;
+            --accent-gold: #F8B400;
+            --danger-red: #FF416C;
+            --glass-bg: rgba(34, 40, 49, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
         body {
-            background: #222831 url('https://images.pexels.com/photos/46798/the-ball-stadion-football-the-pitch-46798.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1?auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+            background: radial-gradient(circle at center, #2c3e50 0%, #000000 100%), url('https://images.pexels.com/photos/46798/the-ball-stadion-football-the-pitch-46798.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1?auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+            background-blend-mode: overlay;
             background-size: cover;
-            color: #EEEEEE;
-            font-family: Arial, sans-serif;
+            color: var(--text-light);
+            font-family: 'Poppins', sans-serif;
             display: flex;
             flex-direction: row;
-            align-items: flex-start;
+            justify-content: center;
+            align-items: center;
             min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+            gap: 40px;
+            cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text x='0' y='24' font-size='24'>⚽</text></svg>") 16 16, auto;
         }
+
+        /* Glassmorphism Generic Class */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
         #quiz-container {
-            background: rgba(34, 40, 49, 0.92);
-            border-radius: 16px;
-            box-shadow: 0 4px 24px #22283188;
-            margin: 40px 0 0 60px;
-            padding: 32px 36px 24px 36px;
-            min-width: 350px;
-            max-width: 500px;
+            padding: 40px;
+            min-width: 400px;
+            max-width: 600px;
+            width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
+            position: relative;
+            z-index: 10;
         }
+
         h1 {
-            color: #00ADB5;
+            color: var(--primary-color);
             margin-top: 0;
-            text-shadow: 2px 2px 8px #222831;
+            text-shadow: 0 0 15px rgba(0, 173, 181, 0.5);
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-align: center;
+            margin-bottom: 20px;
         }
+
+        #score {
+            font-size: 1em;
+            color: #ccc;
+            margin-bottom: 10px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 5px 15px;
+            border-radius: 50px;
+        }
+
         #pergunta {
-            font-size: 1.3em;
+            font-size: 1.5em;
             margin-bottom: 30px;
             text-align: center;
+            line-height: 1.4;
+            font-weight: 600;
+            opacity: 0;
+            /* JS will handle fade in */
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
         }
+
         .opcoes {
             display: flex;
             flex-direction: column;
-            gap: 18px;
+            gap: 15px;
             width: 100%;
         }
+
         .opcao {
-            background: #393E46cc;
-            border: 2px solid #EEEEEE;
-            border-radius: 8px;
-            color: #F8B400;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: var(--text-light);
             font-size: 1.1em;
-            padding: 14px 10px;
-            cursor: pointer;
-            transition: background 0.2s, color 0.2s, border 0.2s;
-            text-align: center;
-            box-shadow: 0 2px 8px #22283144;
+            padding: 16px 20px;
+            cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text x='0' y='24' font-size='24'>⚽</text></svg>") 16 16, pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
         }
+
+        .opcao:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-color);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
         .opcao:hover {
-            background: #00ADB522;
-            color: #EEEEEE;
-            border: 2px solid #00ADB5;
+            background: rgba(0, 173, 181, 0.15);
+            border-color: var(--primary-color);
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
+
+        .opcao:hover:before {
+            transform: scaleY(1);
+        }
+
         .opcao.correta {
-            background: #00ADB5;
-            color: #fff;
-            border: 2px solid #00ADB5;
+            background: rgba(46, 204, 113, 0.2);
+            border-color: #2ecc71;
+            color: #2ecc71;
+            animation: pulse-green 0.6s;
         }
+
         .opcao.errada {
-            background: #B50000;
-            color: #fff;
-            border: 2px solid #B50000;
+            background: rgba(255, 65, 108, 0.2);
+            border-color: var(--danger-red);
+            color: var(--danger-red);
+            animation: shake 0.5s;
         }
-        #score, #proxima {
-            margin-top: 24px;
-            font-size: 1.1em;
-        }
+
+        /* Buttons */
         #proxima {
-            background: #F8B400;
-            color: #222831;
+            background: linear-gradient(135deg, var(--accent-gold) 0%, #f39c12 100%);
+            color: #222;
             border: none;
-            padding: 10px 30px;
-            font-size: 1em;
+            padding: 14px 40px;
+            font-size: 1.1em;
             font-weight: bold;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 18px;
-            box-shadow: 0 2px 8px #22283144;
-            transition: background 0.2s, color 0.2s;
-            display: none;
-        }
-        #proxima:hover {
-            background: #00ADB5;
-            color: #EEEEEE;
-        }
-        #final {
-            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text x='0' y='24' font-size='24'>⚽</text></svg>") 16 16, pointer;
             margin-top: 30px;
-            color: #F8B400;
+            box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
+
+        #proxima:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(243, 156, 18, 0.6);
+            background: linear-gradient(135deg, #f1c40f 0%, #d35400 100%);
+        }
+
+        #proxima:active {
+            transform: translateY(1px);
+        }
+
+        /* Prize Pyramid */
         #piramide {
-            margin: 40px 0 0 40px;
-            background: rgba(34, 40, 49, 0.92);
-            border-radius: 16px;
-            box-shadow: 0 4px 24px #22283188;
-            padding: 24px 24px 24px 24px;
-            min-width: 220px;
-            max-width: 260px;
+            padding: 30px;
+            min-width: 240px;
             display: flex;
             flex-direction: column;
-            align-items: flex-end;
+            align-items: center;
+            /* Center content */
         }
+
+        .premio-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column-reverse;
+            /* Bottom to top visually */
+        }
+
         .premio {
-            font-size: 1.1em;
-            color: #EEEEEE;
-            padding: 5px 0;
-            margin: 0;
+            font-size: 0.95em;
+            color: rgba(255, 255, 255, 0.5);
+            padding: 6px 15px;
+            margin: 2px 0;
             width: 100%;
             text-align: right;
-            transition: background 0.2s, color 0.2s;
             border-radius: 8px;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: space-between;
         }
+
+        .premio span.valor {
+            font-weight: 600;
+        }
+
         .premio.ativo {
-            background: #F8B400;
-            color: #222831;
+            background: var(--accent-gold);
+            color: #222;
             font-weight: bold;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+            /* Bring to front */
         }
+
         .premio.marca {
-            color: #00ADB5;
+            color: var(--text-light);
+            /* White for milestones */
+        }
+
+        .premio.marca.ativo {
+            color: #222;
+        }
+
+        #final {
+            margin-top: 30px;
+            font-size: 1.4em;
+            text-align: center;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse-green {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7);
+            }
+
+            70% {
+                transform: scale(1.02);
+                box-shadow: 0 0 0 10px rgba(46, 204, 113, 0);
+            }
+
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(46, 204, 113, 0);
+            }
+        }
+
+        @keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            50% {
+                transform: translateX(5px);
+            }
+
+            75% {
+                transform: translateX(-5px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 800px) {
+            body {
+                flex-direction: column;
+                padding: 20px;
+                gap: 20px;
+            }
+
+            #quiz-container {
+                margin: 0;
+                width: 100%;
+                min-width: unset;
+            }
+
+            #piramide {
+                margin: 0;
+                width: 100%;
+                min-width: unset;
+                flex-direction: row;
+                /* Horizontal pyramid on mobile? Maybe too complex, let's just make it smaller or hidden */
+                display: none;
+                /* Hide pyramid on very small screens for better UX, or keep it */
+            }
         }
     </style>
 </head>
+
 <body>
-    <div id="quiz-container">
-        <h1>Quiz Futebol</h1>
-        <div id="score">Pergunta: 1 / 20</div>
+    <div id="quiz-container" class="glass-panel">
+        <h1><i class="fas fa-futbol"></i> Quiz Futebol</h1>
+        <div id="score">PERGUNTA 1 / 20</div>
         <div id="pergunta"></div>
         <div class="opcoes"></div>
         <button id="proxima">Próxima Pergunta</button>
         <div id="final" style="display:none;"></div>
     </div>
-    <div id="piramide"></div>
-    <script>
-        // Prémios ao estilo "Quem Quer Ser Milionário"
-        const premios = [
-            "1. 100 €", "2. 200 €", "3. 300 €", "4. 500 €", "5. 1.000 €",
-            "6. 2.000 €", "7. 4.000 €", "8. 8.000 €", "9. 16.000 €", "10. 32.000 €",
-            "11. 64.000 €", "12. 125.000 €", "13. 250.000 €", "14. 500.000 €", "15. 1.000.000 €",
-            "16. 2.000.000 €", "17. 4.000.000 €", "18. 8.000.000 €", "19. 16.000.000 €", "20. 32.000.000 €"
-        ].reverse();
 
-        // Perguntas (30, dificuldade crescente e aleatoriedade)
+    <div id="piramide" class="glass-panel">
+        <h3 style="margin-top:0; color:var(--accent-gold); text-align:center;">Prémios</h3>
+        <div class="premio-container" id="lista-premios"></div>
+    </div>
+
+    <script>
+        // Prémios
+        // Reverse is handled in CSS/JS rendering logic now for clarity
+        const valoresPremios = [
+            "100 €", "200 €", "300 €", "500 €", "1.000 €",
+            "2.000 €", "4.000 €", "8.000 €", "16.000 €", "32.000 €",
+            "64.000 €", "125.000 €", "250.000 €", "500.000 €", "1.000.000 €",
+            "2.000.000 €", "4.000.000 €", "8.000.000 €", "16.000.000 €", "32.000.000 €"
+        ];
+
         const todasPerguntas = [
             // Fáceis
             { pergunta: "Qual país venceu a Copa do Mundo de 2018?", opcoes: ["Brasil", "França", "Alemanha", "Argentina"], correta: 1 },
@@ -184,7 +380,17 @@
             { pergunta: "Qual jogador fez o gol mais rápido em Copas do Mundo?", opcoes: ["Hakan Şükür", "Pelé", "Ronaldo", "Müller"], correta: 0 }
         ];
 
-        // Função para embaralhar array
+        let perguntas = [];
+        let indice = 0;
+        let score = 0;
+
+        const perguntaDiv = document.getElementById('pergunta');
+        const opcoesDiv = document.querySelector('.opcoes');
+        const scoreDiv = document.getElementById('score');
+        const proximaBtn = document.getElementById('proxima');
+        const finalDiv = document.getElementById('final');
+        const listaPremiosDiv = document.getElementById('lista-premios');
+
         function shuffle(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -192,33 +398,34 @@
             }
         }
 
-        // Pirâmide de prémios
-        const piramideDiv = document.getElementById('piramide');
-        function desenharPiramide(atual) {
-            piramideDiv.innerHTML = "";
-            for (let i = 0; i < premios.length; i++) {
+        function renderizarPiramide(indiceAtual) {
+            listaPremiosDiv.innerHTML = "";
+            // We want 1 at bottom, 20 at top. loop 0 to 19.
+            // visual order is flex-direction: column-reverse, so we append 1 first (bottom DOM, bottom visual?)
+            // actually column-reverse: last child is top.
+            // so we append 1...20. 
+            // 20 (top) -> last child. 
+            // 1 (bottom) -> first child.
+            // If column-reverse, first child is at bottom. Correct.
+
+            for (let i = 0; i < valoresPremios.length; i++) {
                 const div = document.createElement('div');
                 div.className = "premio";
-                if (premios.length - i - 1 === atual) div.classList.add("ativo");
+                const num = i + 1;
+
+                // Highlight logic
+                if (i === indiceAtual) div.classList.add("ativo");
                 if ([4, 9, 14, 19].includes(i)) div.classList.add("marca");
-                div.textContent = premios[i];
-                piramideDiv.appendChild(div);
+
+                div.innerHTML = `<span>${num}</span> <span class="valor">${valoresPremios[i]}</span>`;
+                listaPremiosDiv.appendChild(div);
             }
         }
-
-        let perguntas = [];
-        let indice = 0;
-        let score = 0;
-        const perguntaDiv = document.getElementById('pergunta');
-        const opcoesDiv = document.querySelector('.opcoes');
-        const scoreDiv = document.getElementById('score');
-        const proximaBtn = document.getElementById('proxima');
-        const finalDiv = document.getElementById('final');
 
         function novoJogo() {
             perguntas = todasPerguntas.slice();
             shuffle(perguntas);
-            perguntas = perguntas.slice(0, 20); // 20 perguntas aleatórias
+            perguntas = perguntas.slice(0, 20);
             indice = 0;
             score = 0;
             mostrarPergunta();
@@ -227,36 +434,53 @@
         function mostrarPergunta() {
             proximaBtn.style.display = "none";
             finalDiv.style.display = "none";
-            perguntaDiv.textContent = perguntas[indice].pergunta;
+
+            // Animation reset
+            perguntaDiv.style.opacity = "0";
+            perguntaDiv.style.transform = "translateY(20px)";
+
+            setTimeout(() => {
+                perguntaDiv.textContent = perguntas[indice].pergunta;
+                perguntaDiv.style.opacity = "1";
+                perguntaDiv.style.transform = "translateY(0)";
+            }, 50);
+
             opcoesDiv.innerHTML = "";
             perguntas[indice].opcoes.forEach((op, i) => {
                 const btn = document.createElement('div');
                 btn.className = "opcao";
+                // Animation delay for each option
+                btn.style.animation = `fadeInUp 0.5s ease forwards ${i * 0.1}s`;
+                btn.style.opacity = "0"; // Start hidden for animation
                 btn.textContent = op;
                 btn.onclick = () => responder(i, btn);
                 opcoesDiv.appendChild(btn);
             });
-            scoreDiv.textContent = `Pergunta: ${indice + 1} / ${perguntas.length}`;
-            desenharPiramide(indice);
+
+            scoreDiv.textContent = `PERGUNTA ${indice + 1} / ${perguntas.length}`;
+            renderizarPiramide(indice);
         }
 
         function responder(i, btn) {
             const correta = perguntas[indice].correta;
             const opcoes = opcoesDiv.querySelectorAll('.opcao');
-            opcoes.forEach((op, idx) => {
-                op.onclick = null;
-                if (idx === correta) op.classList.add('correta');
-                if (idx === i && idx !== correta) op.classList.add('errada');
-            });
+
+            // Disable clicks
+            opcoes.forEach(op => op.onclick = null);
+
             if (i === correta) {
+                btn.classList.add('correta');
                 score++;
                 proximaBtn.style.display = "block";
-                scoreDiv.textContent = `Pergunta: ${indice + 1} / ${perguntas.length}`;
+
+                // Small confetti for correct answer? Maybe too much. Let's keep it clean.
             } else {
-                finalDiv.style.display = "block";
-                desenharPiramide(-1);
-                finalDiv.textContent = `Errou! Acertou ${score} de ${perguntas.length} perguntas. Prémio: ${score > 0 ? premios[perguntas.length - score] : "0 €"}<br>O jogo vai recomeçar...`;
-                setTimeout(novoJogo, 5000);
+                btn.classList.add('errada');
+                // Show correct one
+                opcoes[correta].classList.add('correta');
+
+                fimDeJogo(false);
+                return;
             }
         }
 
@@ -265,17 +489,61 @@
             if (indice < perguntas.length) {
                 mostrarPergunta();
             } else {
-                perguntaDiv.textContent = "";
-                opcoesDiv.innerHTML = "";
-                proximaBtn.style.display = "none";
-                finalDiv.style.display = "block";
-                desenharPiramide(-1);
-                finalDiv.textContent = `Parabéns! Acertou todas as perguntas! Prémio máximo: ${premios[0]}.<br>O jogo vai recomeçar...`;
-                setTimeout(novoJogo, 7000);
+                fimDeJogo(true);
             }
         };
 
+        function fimDeJogo(venceu) {
+            proximaBtn.style.display = "none";
+            finalDiv.style.display = "block";
+
+            // Keep pyramid visible but remove active highlights or highlight prize
+            renderizarPiramide(score > 0 ? score - 1 : -1);
+
+            if (venceu) {
+                finalDiv.innerHTML = `<h2 style="color: #2ecc71">PARABÉNS!</h2><p>Você é um Mestre do Futebol!</p><p>Prémio Máximo: ${valoresPremios[19]}</p>`;
+                dispararConfetti();
+            } else {
+                const premioGanho = score > 0 ? valoresPremios[score - 1] : "0 €";
+                finalDiv.innerHTML = `<h2 style="color: var(--danger-red)">FIM DE JOGO</h2><p>Você acertou ${score} perguntas.</p><p>Prémio: ${premioGanho}</p><p>Tente novamente!</p>`;
+            }
+
+            setTimeout(() => {
+                const btnRestart = document.createElement('button');
+                btnRestart.id = 'proxima'; // Reuse style
+                btnRestart.style.display = 'inline-block';
+                btnRestart.textContent = 'Jogar Novamente';
+                btnRestart.onclick = novoJogo;
+                finalDiv.appendChild(btnRestart);
+            }, 1000);
+        }
+
+        function dispararConfetti() {
+            var duration = 5 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 999 };
+
+            function randomInOut(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            var interval = setInterval(function () {
+                var timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+
+                var particleCount = 50 * (timeLeft / duration);
+                // since particles fall down, start a bit higher than random
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInOut(0.1, 0.3), y: Math.random() - 0.2 } }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInOut(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
+        }
+
+        // Init
         novoJogo();
     </script>
 </body>
+
 </html>
