@@ -180,6 +180,46 @@
             transform: translateY(1px);
         }
 
+        /* Lifelines */
+        #lifelines {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .lifeline-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-light);
+            padding: 10px 15px;
+            border-radius: 12px;
+            cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text x='0' y='24' font-size='24'>⚽</text></svg>") 16 16, pointer;
+            transition: all 0.3s;
+            font-size: 0.9em;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 80px;
+        }
+
+        .lifeline-btn:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .lifeline-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            filter: grayscale(100%);
+        }
+
+        .lifeline-icon {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
         /* Prize Pyramid */
         #piramide {
             padding: 30px;
@@ -315,16 +355,206 @@
                 display: none;
                 /* Hide pyramid on very small screens for better UX, or keep it */
             }
+
+            /* Hide pyramid on very small screens for better UX, or keep it */
         }
+
+        /* Splash Screen */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(34, 40, 49, 0.98);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            transition: opacity 0.8s ease-out;
+        }
+
+        .splash-content {
+            text-align: center;
+            animation: zoomIn 1s ease;
+        }
+
+        .splash-title {
+            font-size: 3em;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(0, 173, 181, 0.6);
+            line-height: 1.2;
+        }
+
+        .splash-subtitle {
+            font-size: 1.5em;
+            color: var(--text-light);
+            margin-bottom: 50px;
+            font-weight: 300;
+        }
+
+        #start-btn {
+            background: linear-gradient(135deg, var(--accent-gold) 0%, #d35400 100%);
+            color: #222;
+            padding: 18px 60px;
+            font-size: 1.5em;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(248, 180, 0, 0.5);
+            opacity: 0;
+            animation: fadeIn 1s ease forwards 1s;
+            /* Delay 1s */
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: bold;
+        }
+
+        #start-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(248, 180, 0, 0.8);
+        }
+
+        @keyframes zoomIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Leaderboard Styles */
+        .leaderboard-section {
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .input-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        #player-initials {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            text-transform: uppercase;
+            font-size: 1.2em;
+            width: 80px;
+            text-align: center;
+            letter-spacing: 5px;
+        }
+
+        #save-btn {
+            background: var(--primary-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        #save-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        table.leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        .leaderboard-table th {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px;
+            text-align: left;
+        }
+
+        .leaderboard-table td {
+            padding: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .leaderboard-table tr:nth-child(1) td {
+            color: #f1c40f;
+            font-weight: bold;
+        }
+
+        /* Gold */
+        .leaderboard-table tr:nth-child(2) td {
+            color: #bdc3c7;
+            font-weight: bold;
+        }
+
+        /* Silver */
+        .leaderboard-table tr:nth-child(3) td {
+            color: #cd7f32;
+            font-weight: bold;
+        }
+
+        /* Bronze */
     </style>
 </head>
 
 <body>
+    <div id="splash-screen">
+        <div class="splash-content">
+            <h1 class="splash-title">Quem quer ser um<br>Génio Futebolistico?</h1>
+            <div class="splash-subtitle">Prova o teu conhecimento e vence a copa!</div>
+            <button id="start-btn" onclick="startGame()">COMEÇAR</button>
+        </div>
+        <audio id="bg-audio"
+            src="https://archive.org/download/tvtunes_5053/Who%20Wants%20To%20Be%20A%20Millionaire%20-%20Full.mp3"
+            autoplay loop></audio>
+        <audio id="lose-audio" src="https://www.myinstants.com/media/sounds/wrong-answer-sound-effect.mp3"></audio>
+        <audio id="party-audio" src="https://www.myinstants.com/media/sounds/yeah-boy.mp3"></audio>
+    </div>
+
     <div id="quiz-container" class="glass-panel">
         <h1><i class="fas fa-futbol"></i> Quiz Futebol</h1>
         <div id="score">PERGUNTA 1 / 20</div>
         <div id="pergunta"></div>
         <div class="opcoes"></div>
+
+        <div id="lifelines">
+            <button class="lifeline-btn" id="btn-5050" onclick="usar5050()">
+                <span class="lifeline-icon">50:50</span>
+                <span>50/50</span>
+            </button>
+            <button class="lifeline-btn" id="btn-eliminar" onclick="usarEliminar()">
+                <span class="lifeline-icon">🗑️</span>
+                <span>Eliminar 1</span>
+            </button>
+            <button class="lifeline-btn" id="btn-revelar" onclick="usarRevelar()">
+                <span class="lifeline-icon">👁️</span>
+                <span>Revelar</span>
+            </button>
+        </div>
+
         <button id="proxima">Próxima Pergunta</button>
         <div id="final" style="display:none;"></div>
     </div>
@@ -384,6 +614,30 @@
         let indice = 0;
         let score = 0;
 
+        // Lifeline State
+        let lifelinesUsed = {
+            fifty: false,
+            eliminar: false,
+            revelar: false
+        };
+
+        // Audio
+        const bgAudio = document.getElementById('bg-audio');
+        bgAudio.volume = 0.5;
+        const loseAudio = document.getElementById('lose-audio');
+        const partyAudio = document.getElementById('party-audio');
+
+        // Attempt play on load just in case autoplay didn't catch
+        window.addEventListener('load', () => {
+            bgAudio.play().catch(e => {
+                console.log("Autoplay prevented by browser policy.");
+                // Fallback: waiting for user to click anywhere
+                document.body.addEventListener('click', () => {
+                    bgAudio.play();
+                }, { once: true });
+            });
+        });
+
         const perguntaDiv = document.getElementById('pergunta');
         const opcoesDiv = document.querySelector('.opcoes');
         const scoreDiv = document.getElementById('score');
@@ -427,7 +681,15 @@
             shuffle(perguntas);
             perguntas = perguntas.slice(0, 20);
             indice = 0;
+            indice = 0;
             score = 0;
+
+            // Reset Lifelines
+            lifelinesUsed = { fifty: false, eliminar: false, revelar: false };
+            document.getElementById('btn-5050').disabled = false;
+            document.getElementById('btn-eliminar').disabled = false;
+            document.getElementById('btn-revelar').disabled = false;
+
             mostrarPergunta();
         }
 
@@ -473,7 +735,12 @@
                 score++;
                 proximaBtn.style.display = "block";
 
-                // Small confetti for correct answer? Maybe too much. Let's keep it clean.
+                // Small confetti for correct answer
+                dispararConfettiAcerto();
+
+                // Play Party Sound
+                partyAudio.currentTime = 0;
+                partyAudio.play();
             } else {
                 btn.classList.add('errada');
                 // Show correct one
@@ -500,22 +767,108 @@
             // Keep pyramid visible but remove active highlights or highlight prize
             renderizarPiramide(score > 0 ? score - 1 : -1);
 
+            // Stop Background Music
+            bgAudio.pause();
+            bgAudio.currentTime = 0;
+
             if (venceu) {
                 finalDiv.innerHTML = `<h2 style="color: #2ecc71">PARABÉNS!</h2><p>Você é um Mestre do Futebol!</p><p>Prémio Máximo: ${valoresPremios[19]}</p>`;
                 dispararConfetti();
             } else {
+                // Play Lose Sound
+                loseAudio.play();
                 const premioGanho = score > 0 ? valoresPremios[score - 1] : "0 €";
-                finalDiv.innerHTML = `<h2 style="color: var(--danger-red)">FIM DE JOGO</h2><p>Você acertou ${score} perguntas.</p><p>Prémio: ${premioGanho}</p><p>Tente novamente!</p>`;
+                finalDiv.innerHTML = `<h2 style="color: var(--danger-red)">FIM DE JOGO</h2><p>Você acertou ${score} perguntas.</p><p>Prémio: ${premioGanho}</p>`;
             }
 
-            setTimeout(() => {
-                const btnRestart = document.createElement('button');
-                btnRestart.id = 'proxima'; // Reuse style
-                btnRestart.style.display = 'inline-block';
-                btnRestart.textContent = 'Jogar Novamente';
-                btnRestart.onclick = novoJogo;
-                finalDiv.appendChild(btnRestart);
-            }, 1000);
+            // check if eligible for high score (simplified: always show input for fun)
+            finalDiv.innerHTML += `
+                <div class="leaderboard-section">
+                    <p>Enter your initials:</p>
+                    <div class="input-group">
+                        <input type="text" id="player-initials" maxlength="3" placeholder="ABC" oninput="this.value = this.value.toUpperCase()">
+                        <button id="save-btn" onclick="saveHighScore()">SAVE</button>
+                    </div>
+                    <h3>TOP 10 SCORES</h3>
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Score</th>
+                                <th>Prize</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-body"></tbody>
+                    </table>
+                </div>
+                <button id="proxima" onclick="novoJogo()" style="display:inline-block; margin-top:20px;">Jogar Novamente</button>
+            `;
+
+            updateLeaderboardDisplay();
+        }
+
+        function getLeaderboard() {
+            return JSON.parse(localStorage.getItem('quizFutebolLeaderboard')) || [];
+        }
+
+        function saveHighScore() {
+            const initials = document.getElementById('player-initials').value;
+            if (initials.length !== 3) {
+                alert("Please enter exactly 3 letters.");
+                return;
+            }
+
+            const leaderboard = getLeaderboard();
+            const currentPrize = score > 0 ? valoresPremios[score - 1] : "0 €";
+
+            leaderboard.push({
+                name: initials,
+                score: score,
+                prize: currentPrize,
+                date: new Date().toISOString()
+            });
+
+            // Sort by score desc
+            leaderboard.sort((a, b) => b.score - a.score);
+
+            // Keep top 10
+            const top10 = leaderboard.slice(0, 10);
+
+            localStorage.setItem('quizFutebolLeaderboard', JSON.stringify(top10));
+
+            // Disable input
+            document.getElementById('player-initials').disabled = true;
+            document.getElementById('save-btn').disabled = true;
+            document.getElementById('save-btn').textContent = "SAVED";
+
+            updateLeaderboardDisplay();
+        }
+
+        function updateLeaderboardDisplay() {
+            const leaderboard = getLeaderboard();
+            const tbody = document.getElementById('leaderboard-body');
+            tbody.innerHTML = "";
+
+            leaderboard.forEach((entry, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${entry.name}</td>
+                    <td>${entry.score}</td>
+                    <td>${entry.prize}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function dispararConfettiAcerto() {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#00ADB5', '#F8B400', '#EEEEEE'] // Theme colors
+            });
         }
 
         function dispararConfetti() {
@@ -539,6 +892,76 @@
                 confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInOut(0.1, 0.3), y: Math.random() - 0.2 } }));
                 confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInOut(0.7, 0.9), y: Math.random() - 0.2 } }));
             }, 250);
+        }
+
+        // Lifeline Functions
+        function usar5050() {
+            if (lifelinesUsed.fifty) return;
+
+            const correta = perguntas[indice].correta;
+            const opcoes = Array.from(document.querySelectorAll('.opcao'));
+            let erradas = opcoes.map((op, i) => i).filter(i => i !== correta); // indices of wrong answers
+
+            // Shuffle wrong indices
+            shuffle(erradas);
+
+            // Hide 2 wrong answers
+            const toRemove = erradas.slice(0, 2);
+            toRemove.forEach(i => {
+                opcoes[i].style.visibility = 'hidden';
+                // Remove click handler just in case
+                opcoes[i].onclick = null;
+            });
+
+            lifelinesUsed.fifty = true;
+            document.getElementById('btn-5050').disabled = true;
+        }
+
+        function usarEliminar() {
+            if (lifelinesUsed.eliminar) return;
+
+            const correta = perguntas[indice].correta;
+            const opcoes = Array.from(document.querySelectorAll('.opcao'));
+            // Get visible wrong answers
+            let erradas = opcoes.map((op, i) => ({ el: op, i: i }))
+                .filter(item => item.i !== correta && item.el.style.visibility !== 'hidden');
+
+            if (erradas.length > 0) {
+                const randomIdx = Math.floor(Math.random() * erradas.length);
+                const toRemove = erradas[randomIdx];
+
+                toRemove.el.style.visibility = 'hidden';
+                toRemove.el.onclick = null;
+
+                lifelinesUsed.eliminar = true;
+                document.getElementById('btn-eliminar').disabled = true;
+            }
+        }
+
+        function usarRevelar() {
+            if (lifelinesUsed.revelar) return;
+
+            const correta = perguntas[indice].correta;
+            const opcoes = document.querySelectorAll('.opcao');
+
+            // Highlight correct answer
+            opcoes[correta].style.border = "2px solid #F8B400";
+            opcoes[correta].style.boxShadow = "0 0 15px #F8B400";
+
+            lifelinesUsed.revelar = true;
+            document.getElementById('btn-revelar').disabled = true;
+        }
+
+        function startGame() {
+            const splash = document.getElementById('splash-screen');
+            splash.style.opacity = '0';
+
+            // Just lower volume slightly for game focus
+            bgAudio.volume = 0.3;
+
+            setTimeout(() => {
+                splash.style.display = 'none';
+            }, 800);
         }
 
         // Init
